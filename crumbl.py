@@ -22,16 +22,16 @@ class CookieJar:
 
     def add_cookie(self, new_cookie):
         self.cookie_collection.append(new_cookie)
-        new_cookie.save_cookie_image(self.images_dir)
 
     def load_old_cookies(self):
-        df = pd.read_csv(f"{self.cookie_jar_dir}/{CookieJar.cookie_csv_filename}",index_col="id")
-        self.cookie_collection = [Cookie.from_df_row(row) for index, row in df.iterrows()]
+        if os.path.exists(f"{self.cookie_jar_dir}/{CookieJar.cookie_csv_filename}"):
+            df = pd.read_csv(f"{self.cookie_jar_dir}/{CookieJar.cookie_csv_filename}",index_col="id")
+            self.cookie_collection = [Cookie.from_df_row(row) for index, row in df.iterrows()]
 
-    def save_to_cookie_jar_dir(self):
-        df = pd.DataFrame([c.__dict__ for c in self.cookie_collection])
-        df.to_csv(
-            f"{self.cookie_jar_dir}/{CookieJar.cookie_csv_filename}", index_label="id")
+    def save_cookie_jar(self):
+        df_cols = ["date","title","description","image_url","image_filename","image_base64"]
+        df = pd.DataFrame([c.__dict__ for c in self.cookie_collection], columns=df_cols)
+        df.to_csv(f"{self.cookie_jar_dir}/{CookieJar.cookie_csv_filename}", index_label="id")
 
     def archive_cookies(self):
         pass
@@ -51,7 +51,7 @@ class Cookie:
         self.image_url = image_url
         self.image_filename = image_url.split("/")[-1]
         response = requests.get(image_url)
-        if r.status_code == 200:  # 200 status code = OK
+        if response.status_code == 200:  # 200 status code = OK
             self.image_base64 = base64.b64encode(response.content)
         else:
             self.image_base64 = None

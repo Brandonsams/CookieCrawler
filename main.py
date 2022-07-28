@@ -9,6 +9,7 @@ cookies = cc.find_cookies()
 
 # Save the Data
 cookie_jar.add_cookies(cookies)
-cookie_jar.save_to_cookie_jar_dir()
+cookie_jar.save_cookie_jar()
 
-cookies[0].save_cookie_image_2("./")
+
+# [cookie.save_cookie_image("./cookie_jar/images") for cookie in cookie_jar.cookie_collection]
